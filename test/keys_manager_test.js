@@ -1,4 +1,4 @@
-let PoaNetworkConsensusMock = artifacts.require('./PoaNetworkConsensusMock');
+let AriznNetworkConsensusMock = artifacts.require('./AriznNetworkConsensusMock');
 let KeysManagerMock = artifacts.require('./mockContracts/KeysManagerMock');
 let ProxyStorageMock = artifacts.require('./mockContracts/ProxyStorageMock');
 
@@ -9,14 +9,14 @@ require('chai')
   .should();
 
 contract('KeysManager [all features]', function (accounts) {
-  let keysManager, poaNetworkConsensusMock, proxyStorageMock;
+  let keysManager, ariznNetworkConsensusMock, proxyStorageMock;
   masterOfCeremony = accounts[0];
 
   beforeEach(async () => {
-    poaNetworkConsensusMock = await PoaNetworkConsensusMock.new(masterOfCeremony, []);
-    proxyStorageMock = await ProxyStorageMock.new(poaNetworkConsensusMock.address);
-    keysManager = await KeysManagerMock.new(proxyStorageMock.address, poaNetworkConsensusMock.address, masterOfCeremony, "0x0000000000000000000000000000000000000000");
-    await poaNetworkConsensusMock.setProxyStorage(proxyStorageMock.address);
+    ariznNetworkConsensusMock = await AriznNetworkConsensusMock.new(masterOfCeremony, []);
+    proxyStorageMock = await ProxyStorageMock.new(ariznNetworkConsensusMock.address);
+    keysManager = await KeysManagerMock.new(proxyStorageMock.address, ariznNetworkConsensusMock.address, masterOfCeremony, "0x0000000000000000000000000000000000000000");
+    await ariznNetworkConsensusMock.setProxyStorage(proxyStorageMock.address);
     await proxyStorageMock.initializeAddresses(
       keysManager.address,
       masterOfCeremony,
@@ -28,10 +28,10 @@ contract('KeysManager [all features]', function (accounts) {
   });
 
   describe('#constructor', async () => {
-    it('sets masterOfCeremony, proxyStorage, poaConsensus', async () => {
+    it('sets masterOfCeremony, proxyStorage, ariznConsensus', async () => {
       masterOfCeremony.should.be.equal(await keysManager.masterOfCeremony());
       proxyStorageMock.address.should.be.equal(await keysManager.proxyStorage());
-      poaNetworkConsensusMock.address.should.be.equal(await keysManager.poaNetworkConsensus());
+      ariznNetworkConsensusMock.address.should.be.equal(await keysManager.ariznNetworkConsensus());
     })
     it('adds masterOfCeremony to validators hash', async () => {
       const validator = await keysManager.validatorKeys(masterOfCeremony);
@@ -160,12 +160,12 @@ contract('KeysManager [all features]', function (accounts) {
       const miningKey = await keysManager.getMiningKeyByVoting(accounts[3]);
       miningKey.should.be.equal(accounts[4]);
     });
-    it('adds validator to poaConsensus contract', async () => {
+    it('adds validator to ariznConsensus contract', async () => {
       let miningKey = accounts[4];
       await keysManager.initiateKeys(accounts[1], {from: masterOfCeremony}).should.be.fulfilled;
       await keysManager.createKeys(miningKey, accounts[3], accounts[2], {from: accounts[1]});
-      const index = await poaNetworkConsensusMock.currentValidatorsLength();
-      (await poaNetworkConsensusMock.pendingList(index)).should.be.equal(miningKey);
+      const index = await ariznNetworkConsensusMock.currentValidatorsLength();
+      (await ariznNetworkConsensusMock.pendingList(index)).should.be.equal(miningKey);
     })
 
     it('should set validatorKeys hash', async () => {
@@ -197,7 +197,7 @@ contract('KeysManager [all features]', function (accounts) {
       await keysManager.addMiningKey(accounts[1], {from: accounts[2]}).should.be.fulfilled;
     })
     it('should not let add more than maxLimit', async () => {
-      await poaNetworkConsensusMock.setCurrentValidatorsLength(2001);
+      await ariznNetworkConsensusMock.setCurrentValidatorsLength(2001);
       await keysManager.addMiningKey(accounts[2]).should.be.rejectedWith(ERROR_MSG);
     })
     it('should set validatorKeys hash', async () => {
@@ -305,23 +305,23 @@ contract('KeysManager [all features]', function (accounts) {
       const miningKey = await keysManager.getMiningKeyByVoting(validator[0]);
       miningKey.should.be.equal('0x0000000000000000000000000000000000000000');
     })
-    it('removes validator from poaConsensus', async () => {
+    it('removes validator from ariznConsensus', async () => {
       await keysManager.addMiningKey(accounts[1]).should.be.fulfilled;
-      await poaNetworkConsensusMock.setSystemAddress(accounts[0]);
-      await poaNetworkConsensusMock.finalizeChange().should.be.fulfilled;
+      await ariznNetworkConsensusMock.setSystemAddress(accounts[0]);
+      await ariznNetworkConsensusMock.finalizeChange().should.be.fulfilled;
       await keysManager.removeMiningKey(accounts[1]).should.be.fulfilled;
-      let currentValidatorsLength = await poaNetworkConsensusMock.currentValidatorsLength();
+      let currentValidatorsLength = await ariznNetworkConsensusMock.currentValidatorsLength();
       let pendingList = [];
       for(let i = 0; i < currentValidatorsLength.sub(1).toNumber(); i++){
-          let pending = await poaNetworkConsensusMock.pendingList(i);
+          let pending = await ariznNetworkConsensusMock.pendingList(i);
           pendingList.push(pending);
       }
       pendingList.should.not.contain(accounts[1]);
-      await poaNetworkConsensusMock.finalizeChange().should.be.fulfilled;
-      const validators = await poaNetworkConsensusMock.getValidators();
+      await ariznNetworkConsensusMock.finalizeChange().should.be.fulfilled;
+      const validators = await ariznNetworkConsensusMock.getValidators();
       validators.should.not.contain(accounts[1]);
       const expected = currentValidatorsLength.sub(1);
-      const actual = await poaNetworkConsensusMock.currentValidatorsLength();
+      const actual = await ariznNetworkConsensusMock.currentValidatorsLength();
       expected.should.be.bignumber.equal(actual);
     })
 
@@ -434,9 +434,9 @@ contract('KeysManager [all features]', function (accounts) {
         true]
       )
       oldMining.should.be.equal(await keysManager.getMiningKeyHistory(newMining));
-      await poaNetworkConsensusMock.setSystemAddress(accounts[0]);
-      await poaNetworkConsensusMock.finalizeChange().should.be.fulfilled;
-      const validators = await poaNetworkConsensusMock.getValidators();
+      await ariznNetworkConsensusMock.setSystemAddress(accounts[0]);
+      await ariznNetworkConsensusMock.finalizeChange().should.be.fulfilled;
+      const validators = await ariznNetworkConsensusMock.getValidators();
       validators.should.not.contain(oldMining);
       validators.should.contain(newMining);
     })
@@ -479,7 +479,7 @@ contract('KeysManager [all features]', function (accounts) {
   describe('#migrateInitialKey', async () => {
     it('can copy initial keys', async () => {
       await keysManager.initiateKeys(accounts[1]);
-      let newKeysManager = await KeysManagerMock.new(proxyStorageMock.address, poaNetworkConsensusMock.address, masterOfCeremony, keysManager.address);
+      let newKeysManager = await KeysManagerMock.new(proxyStorageMock.address, ariznNetworkConsensusMock.address, masterOfCeremony, keysManager.address);
       keysManager.address.should.be.equal(
         await newKeysManager.previousKeysManager()
       )
@@ -517,7 +517,7 @@ contract('KeysManager [all features]', function (accounts) {
         true,
         true
       ])
-      let newKeysManager = await KeysManagerMock.new(proxyStorageMock.address, poaNetworkConsensusMock.address, masterOfCeremony, keysManager.address);
+      let newKeysManager = await KeysManagerMock.new(proxyStorageMock.address, ariznNetworkConsensusMock.address, masterOfCeremony, keysManager.address);
       // mining #1
       let {logs} = await newKeysManager.migrateMiningKey(miningKey);
       logs[0].event.should.equal("Migrated");
@@ -571,7 +571,7 @@ contract('KeysManager [all features]', function (accounts) {
       )
     })
     it('throws when trying to copy invalid mining key', async () => {
-      let newKeysManager = await KeysManagerMock.new(proxyStorageMock.address, poaNetworkConsensusMock.address, masterOfCeremony, keysManager.address);
+      let newKeysManager = await KeysManagerMock.new(proxyStorageMock.address, ariznNetworkConsensusMock.address, masterOfCeremony, keysManager.address);
       true.should.be.equal(
         await newKeysManager.successfulValidatorClone(masterOfCeremony)
       );

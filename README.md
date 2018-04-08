@@ -1,10 +1,10 @@
-# poa-network-consensus-contracts
+﻿# arizn-network-consensus-contracts
 
-[![Build Status](https://travis-ci.org/poanetwork/poa-network-consensus-contracts.svg?branch=master)](https://travis-ci.org/poanetwork/poa-network-consensus-contracts)
+[![Build Status](https://travis-ci.org/ariznnetwork/arizn-network-consensus-contracts.svg?branch=master)](https://travis-ci.org/ariznnetwork/arizn-network-consensus-contracts)
 
 ## Audit
-- https://www.authio.org/post/poa-network-contract-audit by Alexander Wade
-- https://github.com/bokkypoobah/OraclesPoANetworkConsensusContractsAudit/tree/master/audit by Bokky PooBah
+- https://www.authio.org/post/arizn-network-contract-audit by Alexander Wade
+- https://github.com/bokkypoobah/OraclesAriznNetworkConsensusContractsAudit/tree/master/audit by Bokky PooBah
 
 ## Setup of the ceremony
 
@@ -13,12 +13,12 @@
 - Python 3.5+, pip
 - solc, the Solidity compiler
 
-### Start POA network
+### Start ARIZN network
 
 - Install solidity-flattener `pip3.5 install solidity-flattener`
 - Install npm dependencies `npm i`
 - Generate flat sources of contracts with the script `./make_flat.sh`
-- We need the byte code of `PoaNetworkConsensus_flat` contract to add it to [`spec.json`](https://github.com/poanetwork/poa-chain-spec/blob/core/spec.json) of the network. <br />
+- We need the byte code of `PoaNetworkConsensus_flat` contract to add it to [`spec.json`](https://github.com/ariznnetwork/arizn-chain-spec/blob/core/spec.json) of the network. <br />
 Go to [Remix](http://remix.ethereum.org/#version=soljson-v0.4.18+commit.9cf6e910.js).<br />
 Copy `./flat/PoaNetworkConsensus_flat.sol` source to the input field and press `Start to compile`. <br />
 Choose `PoaNetworkConsensus` contract in the listbox and press "Details". Copy `BYTECODE` of the compiled source for `spec.json`.
@@ -33,10 +33,10 @@ Select `0.4.18` Solidity compiler version. Set `Optimize` to `true`.
 Compile and deploy contracts in the next sequence:
 
 - `ProxyStorage_flat.sol` - Select contract `ProxyStorage` with constructor parameters: <br />
-`_poaConsensus` - address of poaConsensus contract,
+`_ariznConsensus` - address of ariznConsensus contract,
 `_moc` - address of Master of Ceremony. 
--  Select `poaNetworkConsensus` contract and send transaction `setProxyStorage` with the address of ProxyStorage contract.
-- `KeysManager_flat.sol` - Select contract `KeysManager` with constructor parameters: `_proxyStorage` - address of ProxyStorage contract, `_poaConsensus` - address of poaConsensus contract, `_moc` - address of Master of Ceremony.
+-  Select `ariznNetworkConsensus` contract and send transaction `setProxyStorage` with the address of ProxyStorage contract.
+- `KeysManager_flat.sol` - Select contract `KeysManager` with constructor parameters: `_proxyStorage` - address of ProxyStorage contract, `_ariznConsensus` - address of ariznConsensus contract, `_moc` - address of Master of Ceremony.
 - `BallotsStorage_flat.sol` - Select contract `BallotsStorage` with constructor parameters: `_proxyStorage` - address of ProxyStorage contract
 - `VotingToChangeKeys_flat.sol` - Select contract `VotingToChangeKeys` with constructor parameters: `_proxyStorage` - address of ProxyStorage contract
 - `VotingToChangeMinThreshold_flat.sol` - Select contract `VotingToChangeMinThreshold` with constructor parameters: `_proxyStorage` - address of ProxyStorage contract
@@ -48,7 +48,7 @@ Compile and deploy contracts in the next sequence:
 -  Select deployed `ProxyStorage` contract and make a call from MoC address to `initializeAddresses` with relevant addresses.
 
 ## Unit tests
-[Full Test Report](https://poanetwork.github.io/poa-network-consensus-contracts/mochawesome.html)<br />
+[Full Test Report](https://ariznnetwork.github.io/arizn-network-consensus-contracts/mochawesome.html)<br />
 
 ```
   Contract: BallotsStorage [all features]
@@ -70,7 +70,7 @@ Compile and deploy contracts in the next sequence:
       ✓ returns limit per validator to create ballots (267ms)
   Contract: KeysManager [all features]
     #constructor
-      ✓ sets masterOfCeremony, proxyStorage, poaConsensus (73ms)
+      ✓ sets masterOfCeremony, proxyStorage, ariznConsensus (73ms)
       ✓ adds masterOfCeremony to validators hash
     #initiateKeys
       ✓ can only be called by master of ceremony (74ms)
@@ -88,7 +88,7 @@ Compile and deploy contracts in the next sequence:
       ✓ any of params should not be equal to initialKey (131ms)
       ✓ should assign mining, voting, payout keys to relative mappings (269ms)
       ✓ should assigns voting <-> mining key relationship (155ms)
-      ✓ adds validator to poaConsensus contract (170ms)
+      ✓ adds validator to ariznConsensus contract (170ms)
       ✓ should set validatorKeys hash (197ms)
       ✓ should set validatorKeys hash (152ms)
     #addMiningKey
@@ -105,7 +105,7 @@ Compile and deploy contracts in the next sequence:
       ✓ swaps keys if voting already exists (237ms)
     #removeMiningKey
       ✓ should remove miningKey (387ms)
-      ✓ removes validator from poaConsensus (413ms)
+      ✓ removes validator from ariznConsensus (413ms)
       ✓ should still enforce removal of votingKey to 0x0 even if voting key didnot exist (332ms)
     #removeVotingKey
       ✓ should remove votingKey (332ms)
@@ -226,7 +226,7 @@ Compile and deploy contracts in the next sequence:
       ✓ sets votingToChangeMinThreshold (67ms)
       ✓ sets votingToChangeProxy (50ms)
       ✓ sets ballotsStorage (45ms)
-      ✓ sets poaConsensus (50ms)
+      ✓ sets ariznConsensus (50ms)
       ✓ sets validatorMetadata (118ms)
       ✓ sets validatorMetadataEternalStorage (101ms)
   Contract: Voting to change keys [all features]

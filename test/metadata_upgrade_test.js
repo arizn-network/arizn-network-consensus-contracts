@@ -1,4 +1,4 @@
-let PoaNetworkConsensusMock = artifacts.require('./mockContracts/PoaNetworkConsensusMock');
+let AriznNetworkConsensusMock = artifacts.require('./mockContracts/AriznNetworkConsensusMock');
 let KeysManagerMock = artifacts.require('./mockContracts/KeysManagerMock');
 let ValidatorMetadata = artifacts.require('./mockContracts/ValidatorMetadataMock');
 let ValidatorMetadataNew = artifacts.require('./upgradeContracts/ValidatorMetadataNew');
@@ -17,7 +17,7 @@ require('chai')
   .use(require('chai-bignumber')(web3.BigNumber))
   .should();
 
-let keysManager, ballotsStorage, poaNetworkConsensusMock;
+let keysManager, ballotsStorage, ariznNetworkConsensusMock;
 let metadata, metadataEternalStorage;
 let votingKey, votingKey2, votingKey3, miningKey;
 let fakeData = [
@@ -40,11 +40,11 @@ contract('ValidatorMetadata upgraded [all features]', function (accounts) {
   miningKey3 = accounts[5];
   votingKey3 = accounts[7];
   beforeEach(async () => { 
-    poaNetworkConsensusMock = await PoaNetworkConsensusMock.new(masterOfCeremony, []);
-    proxyStorageMock = await ProxyStorageMock.new(poaNetworkConsensusMock.address);
-    keysManager = await KeysManagerMock.new(proxyStorageMock.address, poaNetworkConsensusMock.address, masterOfCeremony, "0x0000000000000000000000000000000000000000");
+    ariznNetworkConsensusMock = await AriznNetworkConsensusMock.new(masterOfCeremony, []);
+    proxyStorageMock = await ProxyStorageMock.new(ariznNetworkConsensusMock.address);
+    keysManager = await KeysManagerMock.new(proxyStorageMock.address, ariznNetworkConsensusMock.address, masterOfCeremony, "0x0000000000000000000000000000000000000000");
     ballotsStorage = await BallotsStorage.new(proxyStorageMock.address);
-    await poaNetworkConsensusMock.setProxyStorage(proxyStorageMock.address);
+    await ariznNetworkConsensusMock.setProxyStorage(proxyStorageMock.address);
 
     metadata = await ValidatorMetadata.new();
     metadataEternalStorage = await EternalStorageProxy.new(proxyStorageMock.address, metadata.address);

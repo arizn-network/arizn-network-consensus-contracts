@@ -10,8 +10,8 @@ async function addValidators({
   for(let validator of arrayOfAddresses){
     await keysManager.addMiningKey(validator).should.be.fulfilled;
   }
-  await poaNetworkConsensusMock.setSystemAddress(masterOfCeremony);
-  await poaNetworkConsensusMock.finalizeChange().should.be.fulfilled;
+  await ariznNetworkConsensusMock.setSystemAddress(masterOfCeremony);
+  await ariznNetworkConsensusMock.finalizeChange().should.be.fulfilled;
 }
 
 let arrayOfHundredAddresses = [

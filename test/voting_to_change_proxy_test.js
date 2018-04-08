@@ -1,4 +1,4 @@
-let PoaNetworkConsensusMock = artifacts.require('./mockContracts/PoaNetworkConsensusMock');
+let AriznNetworkConsensusMock = artifacts.require('./mockContracts/AriznNetworkConsensusMock');
 let ProxyStorageMock = artifacts.require('./mockContracts/ProxyStorageMock');
 let KeysManagerMock = artifacts.require('./mockContracts/KeysManagerMock');
 let VotingToChangeProxyAddress = artifacts.require('./mockContracts/VotingToChangeProxyAddressMock');
@@ -19,7 +19,7 @@ require('chai')
   .use(require('chai-bignumber')(web3.BigNumber))
   .should();
 
-let keysManager, poaNetworkConsensusMock, ballotsStorage, voting;
+let keysManager, ariznNetworkConsensusMock, ballotsStorage, voting;
 let votingKey, votingKey2, votingKey3, miningKeyForVotingKey;
 let validatorMetadata, validatorMetadataEternalStorage;
 contract('VotingToChangeProxyAddress [all features]', function (accounts) {
@@ -28,11 +28,11 @@ contract('VotingToChangeProxyAddress [all features]', function (accounts) {
   miningKeyForVotingKey = accounts[1];
   
   beforeEach(async () => {
-    poaNetworkConsensusMock = await PoaNetworkConsensusMock.new(masterOfCeremony, []);
-    proxyStorageMock = await ProxyStorageMock.new(poaNetworkConsensusMock.address);
-    keysManager = await KeysManagerMock.new(proxyStorageMock.address, poaNetworkConsensusMock.address, masterOfCeremony, "0x0000000000000000000000000000000000000000");
+    ariznNetworkConsensusMock = await AriznNetworkConsensusMock.new(masterOfCeremony, []);
+    proxyStorageMock = await ProxyStorageMock.new(ariznNetworkConsensusMock.address);
+    keysManager = await KeysManagerMock.new(proxyStorageMock.address, ariznNetworkConsensusMock.address, masterOfCeremony, "0x0000000000000000000000000000000000000000");
     ballotsStorage = await BallotsStorage.new(proxyStorageMock.address);
-    await poaNetworkConsensusMock.setProxyStorage(proxyStorageMock.address);
+    await ariznNetworkConsensusMock.setProxyStorage(proxyStorageMock.address);
     voting = await VotingToChangeProxyAddress.new(proxyStorageMock.address);
 
     validatorMetadata = await ValidatorMetadata.new();
@@ -137,7 +137,7 @@ contract('VotingToChangeProxyAddress [all features]', function (accounts) {
       await voting.createBallotToChangeProxyAddress(VOTING_START_DATE, VOTING_END_DATE, accounts[5], 2, "memo",{from: votingKey});
       // we have 1 validator, so 200 limit / 1 = 200
       new web3.BigNumber(200).should.be.bignumber.equal(await voting.getBallotLimitPerValidator());
-      await addValidators({proxyStorageMock, keysManager, poaNetworkConsensusMock}); // add 100 validators, so total will be 101 validator
+      await addValidators({proxyStorageMock, keysManager, ariznNetworkConsensusMock}); // add 100 validators, so total will be 101 validator
       new web3.BigNumber(1).should.be.bignumber.equal(await voting.getBallotLimitPerValidator());
       await voting.createBallotToChangeProxyAddress(VOTING_START_DATE, VOTING_END_DATE, accounts[5], 2, "memo",{from: votingKey}).should.be.rejectedWith(ERROR_MSG)
     })
@@ -257,8 +257,8 @@ contract('VotingToChangeProxyAddress [all features]', function (accounts) {
 
       await keysManager.addMiningKey(accounts[4]).should.be.fulfilled;
       await keysManager.addVotingKey(votingKey3, accounts[4]).should.be.fulfilled;
-      await poaNetworkConsensusMock.setSystemAddress(accounts[0]);
-      await poaNetworkConsensusMock.finalizeChange().should.be.fulfilled;
+      await ariznNetworkConsensusMock.setSystemAddress(accounts[0]);
+      await ariznNetworkConsensusMock.finalizeChange().should.be.fulfilled;
       await proxyStorageMock.setVotingContractMock(voting.address);
     })
     it('doesnot change if it did not pass minimum threshold', async () => {

@@ -1,12 +1,12 @@
 pragma solidity ^0.4.18;
-import '../../contracts/PoaNetworkConsensus.sol';
+import '../../contracts/AriznNetworkConsensus.sol';
 import '../../contracts/ProxyStorage.sol';
 import '../../contracts/interfaces/IProxyStorage.sol';
 
-contract PoaNetworkConsensusMock is PoaNetworkConsensus {
+contract AriznNetworkConsensusMock is AriznNetworkConsensus {
     //For testing
     // address public systemAddress = 0xfffffffffffffffffffffffffffffffffffffffe;
-    function PoaNetworkConsensusMock(address _moc, address[] validators) 
+    function AriznNetworkConsensusMock(address _moc, address[] validators) 
         PoaNetworkConsensus(_moc, validators) 
     {}
     function setSystemAddress(address _newAddress) public {

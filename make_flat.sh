@@ -4,7 +4,7 @@
 #pip3 install solidity-flattener --no-cache-dir -U
 rm -rf flat/*
 solidity_flattener contracts/KeysManager.sol | sed "1s/.*/pragma solidity ^0.4.18;/" > flat/KeysManager_flat.sol
-solidity_flattener contracts/PoaNetworkConsensus.sol | sed "1s/.*/pragma solidity ^0.4.18;/" > flat/PoaNetworkConsensus_flat.sol
+solidity_flattener contracts/AriznNetworkConsensus.sol | sed "1s/.*/pragma solidity ^0.4.18;/" > flat/AriznNetworkConsensus_flat.sol
 solidity_flattener contracts/VotingToChangeKeys.sol | sed "1s/.*/pragma solidity ^0.4.18;/" > flat/VotingToChangeKeys_flat.sol
 solidity_flattener contracts/VotingToChangeMinThreshold.sol | sed "1s/.*/pragma solidity ^0.4.18;/" > flat/VotingToChangeMinThreshold_flat.sol
 solidity_flattener contracts/ValidatorMetadata.sol | sed "1s/.*/pragma solidity ^0.4.18;/" > flat/ValidatorMetadata_flat.sol

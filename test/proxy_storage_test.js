@@ -1,4 +1,4 @@
-let PoaNetworkConsensus = artifacts.require('./mockContracts/PoaNetworkConsensusMock');
+let AriznNetworkConsensus = artifacts.require('./mockContracts/AriznNetworkConsensusMock');
 let ProxyStorageMock = artifacts.require('./mockContracts/ProxyStorageMock');
 let ValidatorMetadata = artifacts.require('./ValidatorMetadata');
 let EternalStorageProxy = artifacts.require('./EternalStorageProxy');
@@ -26,15 +26,15 @@ contract('ProxyStorage [all features]', function (accounts) {
   }
   masterOfCeremony = accounts[0];
   beforeEach(async () => {
-    poaNetworkConsensus = await PoaNetworkConsensus.new(masterOfCeremony, []);
-    proxyStorage = await ProxyStorageMock.new(poaNetworkConsensus.address);
+    ariznNetworkConsensus = await AriznNetworkConsensus.new(masterOfCeremony, []);
+    proxyStorage = await ProxyStorageMock.new(ariznNetworkConsensus.address);
     validatorMetadata = await ValidatorMetadata.new();
     validatorMetadataEternalStorage = await EternalStorageProxy.new(proxyStorage.address, validatorMetadata.address);
   })
   describe('#constructor', async () => {
-    it('sets MoC and Poa', async () => {
-      poaNetworkConsensus.address.should.be.equal(
-        await proxyStorage.getPoaConsensus()
+    it('sets MoC and Arizn', async () => {
+      ariznNetworkConsensus.address.should.be.equal(
+        await proxyStorage.getAriznConsensus()
       );
       true.should.be.equal(
         await proxyStorage.isValidator(masterOfCeremony)
@@ -157,10 +157,10 @@ contract('ProxyStorage [all features]', function (accounts) {
         await proxyStorage.getBallotsStorage()
       )
     })
-    it('sets poaConsensus', async () => {
+    it('sets ariznConsensus', async () => {
       await proxyStorage.setContractAddress(6, accounts[5], {from: votingToChangeProxy}).should.be.fulfilled;
       accounts[5].should.be.equal(
-        await proxyStorage.getPoaConsensus()
+        await proxyStorage.getAriznConsensus()
       )
     })
     it('sets validatorMetadata', async () => {

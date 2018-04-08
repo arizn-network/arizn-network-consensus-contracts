@@ -1,4 +1,4 @@
-let PoaNetworkConsensus = artifacts.require('./mockContracts/PoaNetworkConsensusMock');
+let AriznNetworkConsensus = artifacts.require('./mockContracts/AriznNetworkConsensusMock');
 let ProxyStorageMock = artifacts.require('./mockContracts/ProxyStorageMock');
 let BallotsStorageMock = artifacts.require('./mockContracts/BallotsStorageMock');
 let VotingToChangeMinThresholdMock = artifacts.require('./mockContracts/VotingToChangeMinThresholdMock');
@@ -26,11 +26,11 @@ contract('BallotsStorage [all features]', function (accounts) {
   }
   masterOfCeremony = accounts[0];
   beforeEach(async () => {
-    poaNetworkConsensus = await PoaNetworkConsensus.new(masterOfCeremony, []);
-    proxyStorage = await ProxyStorageMock.new(poaNetworkConsensus.address);
+    AriznNetworkConsensus = await AriznNetworkConsensus.new(masterOfCeremony, []);
+    proxyStorage = await ProxyStorageMock.new(AriznNetworkConsensus.address);
     ballotsStorageMock = await BallotsStorageMock.new(proxyStorage.address);
-    keysManager = await KeysManagerMock.new(proxyStorage.address, poaNetworkConsensus.address, masterOfCeremony, "0x0000000000000000000000000000000000000000");
-    await poaNetworkConsensus.setProxyStorage(proxyStorage.address);
+    keysManager = await KeysManagerMock.new(proxyStorage.address, AriznNetworkConsensus.address, masterOfCeremony, "0x0000000000000000000000000000000000000000");
+    await AriznNetworkConsensus.setProxyStorage(proxyStorage.address);
     await proxyStorage.initializeAddresses(
       keysManager.address,
       votingToChangeKeys,
@@ -41,7 +41,7 @@ contract('BallotsStorage [all features]', function (accounts) {
     );
   })
   describe('#constructor', async () => {
-    it('sets MoC and Poa', async () => {
+    it('sets MoC and Arizn', async () => {
       new web3.BigNumber(3).should.be.bignumber.equal(
         await ballotsStorageMock.getBallotThreshold(1)
       );
@@ -79,10 +79,10 @@ contract('BallotsStorage [all features]', function (accounts) {
   describe('#getTotalNumberOfValidators', async () => {
     it('returns total number of validators', async () => {
       await proxyStorage.setKeysManagerMock(masterOfCeremony);
-      await poaNetworkConsensus.addValidator(accounts[1], true);
-      await poaNetworkConsensus.setSystemAddress(masterOfCeremony);
-      await poaNetworkConsensus.finalizeChange().should.be.fulfilled;
-      const getValidators = await poaNetworkConsensus.getValidators();
+      await AriznNetworkConsensus.addValidator(accounts[1], true);
+      await AriznNetworkConsensus.setSystemAddress(masterOfCeremony);
+      await AriznNetworkConsensus.finalizeChange().should.be.fulfilled;
+      const getValidators = await AriznNetworkConsensus.getValidators();
       new web3.BigNumber(2).should.be.bignumber.equal(getValidators.length);
       new web3.BigNumber(2).should.be.bignumber.equal(await ballotsStorageMock.getTotalNumberOfValidators())
     })
@@ -91,14 +91,14 @@ contract('BallotsStorage [all features]', function (accounts) {
     it('returns total number of validators', async () => {
       new web3.BigNumber(1).should.be.bignumber.equal(await ballotsStorageMock.getProxyThreshold())
       await proxyStorage.setKeysManagerMock(masterOfCeremony);
-      await poaNetworkConsensus.addValidator(accounts[1], true);
-      await poaNetworkConsensus.addValidator(accounts[2], true);
-      await poaNetworkConsensus.addValidator(accounts[3], true);
-      await poaNetworkConsensus.addValidator(accounts[4], true);
-      await poaNetworkConsensus.addValidator(accounts[5], true);
-      await poaNetworkConsensus.setSystemAddress(accounts[0]);
-      await poaNetworkConsensus.finalizeChange().should.be.fulfilled;
-      const getValidators = await poaNetworkConsensus.getValidators();
+      await AriznNetworkConsensus.addValidator(accounts[1], true);
+      await AriznNetworkConsensus.addValidator(accounts[2], true);
+      await AriznNetworkConsensus.addValidator(accounts[3], true);
+      await AriznNetworkConsensus.addValidator(accounts[4], true);
+      await AriznNetworkConsensus.addValidator(accounts[5], true);
+      await AriznNetworkConsensus.setSystemAddress(accounts[0]);
+      await AriznNetworkConsensus.finalizeChange().should.be.fulfilled;
+      const getValidators = await AriznNetworkConsensus.getValidators();
       new web3.BigNumber(6).should.be.bignumber.equal(getValidators.length);
       new web3.BigNumber(3).should.be.bignumber.equal(await ballotsStorageMock.getProxyThreshold())
     })
@@ -117,8 +117,8 @@ contract('BallotsStorage [all features]', function (accounts) {
 
       await keysManager.addMiningKey(accounts[1]).should.be.fulfilled;
       await keysManager.addMiningKey(accounts[2]).should.be.fulfilled;
-      await poaNetworkConsensus.setSystemAddress(accounts[0]);
-      await poaNetworkConsensus.finalizeChange().should.be.fulfilled;
+      await AriznNetworkConsensus.setSystemAddress(accounts[0]);
+      await AriznNetworkConsensus.finalizeChange().should.be.fulfilled;
       limit = await ballotsStorageMock.getBallotLimitPerValidator();
       limit.should.be.bignumber.equal(100);
     })

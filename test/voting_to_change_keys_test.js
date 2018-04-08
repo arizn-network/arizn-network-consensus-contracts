@@ -1,4 +1,4 @@
-let PoaNetworkConsensusMock = artifacts.require('./mockContracts/PoaNetworkConsensusMock');
+let AriznNetworkConsensusMock = artifacts.require('./mockContracts/AriznNetworkConsensusMock');
 let ProxyStorageMock = artifacts.require('./mockContracts/ProxyStorageMock');
 let KeysManagerMock = artifacts.require('./mockContracts/KeysManagerMock');
 let VotingToChangeKeysMock = artifacts.require('./mockContracts/VotingToChangeKeysMock');
@@ -16,18 +16,18 @@ require('chai')
   .use(require('chai-bignumber')(web3.BigNumber))
   .should();
 
-let keysManager, poaNetworkConsensusMock, ballotsStorage, voting;
+let keysManager, ariznNetworkConsensusMock, ballotsStorage, voting;
 let votingKey, votingKey2, votingKey3, miningKeyForVotingKey;
 contract('Voting to change keys [all features]', function (accounts) {
   votingKey = accounts[2];
   miningKeyForVotingKey = accounts[1];
   masterOfCeremony = accounts[0];
   beforeEach(async () => {
-    poaNetworkConsensusMock = await PoaNetworkConsensusMock.new(masterOfCeremony, []);
-    proxyStorageMock = await ProxyStorageMock.new(poaNetworkConsensusMock.address);
-    keysManager = await KeysManagerMock.new(proxyStorageMock.address, poaNetworkConsensusMock.address, masterOfCeremony, "0x0000000000000000000000000000000000000000");
+    ariznNetworkConsensusMock = await AriznNetworkConsensusMock.new(masterOfCeremony, []);
+    proxyStorageMock = await ProxyStorageMock.new(ariznNetworkConsensusMock.address);
+    keysManager = await KeysManagerMock.new(proxyStorageMock.address, ariznNetworkConsensusMock.address, masterOfCeremony, "0x0000000000000000000000000000000000000000");
     ballotsStorage = await BallotsStorage.new(proxyStorageMock.address);
-    await poaNetworkConsensusMock.setProxyStorage(proxyStorageMock.address);
+    await ariznNetworkConsensusMock.setProxyStorage(proxyStorageMock.address);
     voting = await VotingToChangeKeysMock.new(proxyStorageMock.address);
     await proxyStorageMock.initializeAddresses(
       keysManager.address,
@@ -79,7 +79,7 @@ contract('Voting to change keys [all features]', function (accounts) {
       await voting.createVotingForKeys(VOTING_START_DATE, VOTING_END_DATE, accounts[1], 1, accounts[2], 1, "memo", {from: votingKey});
       await voting.createVotingForKeys(VOTING_START_DATE, VOTING_END_DATE, accounts[1], 1, accounts[2], 1, "memo", {from: votingKey});
       new web3.BigNumber(200).should.be.bignumber.equal(await voting.getBallotLimitPerValidator());
-      await addValidators({proxyStorageMock, keysManager, poaNetworkConsensusMock}); //add 100 validators, so total will be 101 validator
+      await addValidators({proxyStorageMock, keysManager, ariznNetworkConsensusMock}); //add 100 validators, so total will be 101 validator
       new web3.BigNumber(1).should.be.bignumber.equal(await voting.getBallotLimitPerValidator());
       await voting.createVotingForKeys(VOTING_START_DATE, VOTING_END_DATE, accounts[1], 1, accounts[2], 1, "memo", {from: votingKey}).should.be.rejectedWith(ERROR_MSG)
 
@@ -318,10 +318,10 @@ contract('Voting to change keys [all features]', function (accounts) {
         _ballotType: 1,
         
       })
-      await poaNetworkConsensusMock.setSystemAddress(accounts[0]);
-      await poaNetworkConsensusMock.finalizeChange().should.be.fulfilled;
-      true.should.be.equal(await poaNetworkConsensusMock.isValidator(miningKey));
-      let validators = await poaNetworkConsensusMock.getValidators();
+      await ariznNetworkConsensusMock.setSystemAddress(accounts[0]);
+      await ariznNetworkConsensusMock.finalizeChange().should.be.fulfilled;
+      true.should.be.equal(await ariznNetworkConsensusMock.isValidator(miningKey));
+      let validators = await ariznNetworkConsensusMock.getValidators();
       await voting.setTime(VOTING_START_DATE - 1);
       await deployAndTestBallot({
         _affectedKey: accounts[5],
@@ -356,11 +356,11 @@ contract('Voting to change keys [all features]', function (accounts) {
         false,
         false ]
       )
-      await poaNetworkConsensusMock.setSystemAddress(accounts[0]);
-      await poaNetworkConsensusMock.finalizeChange().should.be.fulfilled;
-      const validators = await poaNetworkConsensusMock.getValidators();
+      await ariznNetworkConsensusMock.setSystemAddress(accounts[0]);
+      await ariznNetworkConsensusMock.finalizeChange().should.be.fulfilled;
+      const validators = await ariznNetworkConsensusMock.getValidators();
       validators.should.contain(miningKey);
-      true.should.be.equal(await poaNetworkConsensusMock.isValidator(miningKey));
+      true.should.be.equal(await ariznNetworkConsensusMock.isValidator(miningKey));
 
     })
     it('finalize removal of MiningKey', async () => {
@@ -387,11 +387,11 @@ contract('Voting to change keys [all features]', function (accounts) {
         false,
         false ]
       )
-      await poaNetworkConsensusMock.setSystemAddress(accounts[0]);
-      await poaNetworkConsensusMock.finalizeChange().should.be.fulfilled;
-      const validators = await poaNetworkConsensusMock.getValidators();
+      await ariznNetworkConsensusMock.setSystemAddress(accounts[0]);
+      await ariznNetworkConsensusMock.finalizeChange().should.be.fulfilled;
+      const validators = await ariznNetworkConsensusMock.getValidators();
       validators.should.not.contain(miningKey);
-      false.should.be.equal(await poaNetworkConsensusMock.isValidator(miningKey));
+      false.should.be.equal(await ariznNetworkConsensusMock.isValidator(miningKey));
     })
     it('finalize removal of VotingKey', async () => {
       let miningKey = accounts[6];
@@ -543,13 +543,13 @@ contract('Voting to change keys [all features]', function (accounts) {
         false,
         false ]
       )
-      await poaNetworkConsensusMock.setSystemAddress(accounts[0]);
-      await poaNetworkConsensusMock.finalizeChange().should.be.fulfilled;
-      const validators = await poaNetworkConsensusMock.getValidators();
+      await ariznNetworkConsensusMock.setSystemAddress(accounts[0]);
+      await ariznNetworkConsensusMock.finalizeChange().should.be.fulfilled;
+      const validators = await ariznNetworkConsensusMock.getValidators();
       validators.should.not.contain(miningKey);
       validators.should.contain(affectedKey);
-      false.should.be.equal(await poaNetworkConsensusMock.isValidator(miningKey));
-      true.should.be.equal(await poaNetworkConsensusMock.isValidator(affectedKey));
+      false.should.be.equal(await ariznNetworkConsensusMock.isValidator(miningKey));
+      true.should.be.equal(await ariznNetworkConsensusMock.isValidator(affectedKey));
     })
     it('prevent double finalize', async () => {
       let miningKey = accounts[6];

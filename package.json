@@ -1,7 +1,7 @@
 {
-  "name": "poa-network-consensus-contracts",
+  "name": "arizn-network-consensus-contracts",
   "version": "1.0.0",
-  "description": "Solidity smart contracts for PoA validator set consensus",
+  "description": "Solidity smart contracts for Arizn validator set consensus",
   "main": "",
   "scripts": {
     "test": "bash scripts/test.sh",
