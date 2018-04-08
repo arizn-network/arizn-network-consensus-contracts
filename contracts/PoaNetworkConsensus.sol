@@ -1,10 +1,10 @@
 pragma solidity ^0.4.18;
 
-import "./interfaces/IPoaNetworkConsensus.sol";
+import "./interfaces/IAriznNetworkConsensus.sol";
 import "./interfaces/IProxyStorage.sol";
 
 
-contract PoaNetworkConsensus is IPoaNetworkConsensus {
+contract AriznNetworkConsensus is IAriznNetworkConsensus {
     /// Issue this log event to signal a desired change in validator set.
     /// This will not lead to a change in active validator set until 
     /// finalizeChange is called.
@@ -56,7 +56,7 @@ contract PoaNetworkConsensus is IPoaNetworkConsensus {
         _;
     }
 
-    function PoaNetworkConsensus(address _masterOfCeremony, address[] validators) public {
+    function AriznNetworkConsensus(address _masterOfCeremony, address[] validators) public {
         // TODO: When you deploy this contract, make sure you hardcode items below
         // Make sure you have those addresses defined in spec.json
         require(_masterOfCeremony != address(0));

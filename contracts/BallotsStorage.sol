@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 import "./interfaces/IBallotsStorage.sol";
 import "./interfaces/IProxyStorage.sol";
-import "./interfaces/IPoaNetworkConsensus.sol";
+import "./interfaces/IAriznNetworkConsensus.sol";
 import "./SafeMath.sol";
 
 
@@ -41,8 +41,8 @@ contract BallotsStorage is IBallotsStorage {
     }
 
     function getTotalNumberOfValidators() public view returns(uint256) {
-        IPoaNetworkConsensus poa = IPoaNetworkConsensus(proxyStorage.getPoaConsensus());
-        return poa.getCurrentValidatorsLength();
+        IAriznNetworkConsensus Arizn = IAriznNetworkConsensus(proxyStorage.getAriznConsensus());
+        return Arizn.getCurrentValidatorsLength();
     }
 
     function getProxyThreshold() public view returns(uint256) {

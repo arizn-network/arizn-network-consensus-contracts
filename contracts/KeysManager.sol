@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "./interfaces/IPoaNetworkConsensus.sol";
+import "./interfaces/IAriznNetworkConsensus.sol";
 import "./interfaces/IKeysManager.sol";
 import "./interfaces/IProxyStorage.sol";
 
@@ -20,7 +20,7 @@ contract KeysManager is IKeysManager {
     address public previousKeysManager;
     IProxyStorage public proxyStorage;
     
-    IPoaNetworkConsensus public poaNetworkConsensus;
+    IAriznNetworkConsensus public AriznNetworkConsensus;
     uint256 public maxNumberOfInitialKeys = 12;
     uint256 public initialKeysCount = 0;
     uint256 public maxLimitValidators = 2000;
@@ -49,17 +49,17 @@ contract KeysManager is IKeysManager {
     }
 
     modifier withinTotalLimit() {
-        require(poaNetworkConsensus.getCurrentValidatorsLength() <= maxLimitValidators);
+        require(AriznNetworkConsensus.getCurrentValidatorsLength() <= maxLimitValidators);
         _;
     }
 
-    function KeysManager(address _proxyStorage, address _poaConsensus, address _masterOfCeremony, address _previousKeysManager) public {
-        require(_proxyStorage != address(0) && _poaConsensus != address(0));
-        require(_proxyStorage != _poaConsensus);
-        require(_masterOfCeremony != address(0) && _masterOfCeremony != _poaConsensus);
+    function KeysManager(address _proxyStorage, address _AriznConsensus, address _masterOfCeremony, address _previousKeysManager) public {
+        require(_proxyStorage != address(0) && _AriznConsensus != address(0));
+        require(_proxyStorage != _AriznConsensus);
+        require(_masterOfCeremony != address(0) && _masterOfCeremony != _AriznConsensus);
         masterOfCeremony = _masterOfCeremony;
         proxyStorage = IProxyStorage(_proxyStorage);
-        poaNetworkConsensus = IPoaNetworkConsensus(_poaConsensus);
+        AriznNetworkConsensus = IAriznNetworkConsensus(_AriznConsensus);
         validatorKeys[masterOfCeremony] = Keys({
             votingKey: address(0),
             payoutKey: address(0),
@@ -129,7 +129,7 @@ contract KeysManager is IKeysManager {
         });
         miningKeyByVoting[_votingKey] = _miningKey;
         initialKeys[msg.sender] = uint8(InitialKeyState.Deactivated);
-        poaNetworkConsensus.addValidator(_miningKey, true);
+        AriznNetworkConsensus.addValidator(_miningKey, true);
         ValidatorInitialized(_miningKey, _votingKey, _payoutKey);
     }
 
@@ -209,7 +209,7 @@ contract KeysManager is IKeysManager {
             isPayoutActive: isPayoutActive(_oldMiningKey),
             isMiningActive: true
         });
-        poaNetworkConsensus.swapValidatorKey(_key, _oldMiningKey);
+        AriznNetworkConsensus.swapValidatorKey(_key, _oldMiningKey);
         validatorKeys[_oldMiningKey] = Keys({
             votingKey: address(0),
             payoutKey: address(0),
@@ -247,7 +247,7 @@ contract KeysManager is IKeysManager {
             isPayoutActive: false,
             isMiningActive: true
         });
-        poaNetworkConsensus.addValidator(_key, true);
+        AriznNetworkConsensus.addValidator(_key, true);
         MiningKeyChanged(_key, "added");
     }
 
@@ -287,7 +287,7 @@ contract KeysManager is IKeysManager {
             isPayoutActive: false,
             isMiningActive: false
         });
-        poaNetworkConsensus.removeValidator(_key, true);
+        AriznNetworkConsensus.removeValidator(_key, true);
         MiningKeyChanged(_key, "removed");
     }
 

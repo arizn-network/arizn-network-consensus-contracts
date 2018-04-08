@@ -1,5 +1,5 @@
 var fs = require('fs');
-var PoaNetworkConsensus = artifacts.require("./PoaNetworkConsensus.sol");
+var AriznNetworkConsensus = artifacts.require("./AriznNetworkConsensus.sol");
 var ProxyStorage = artifacts.require("./ProxyStorage.sol");
 var KeysManager = artifacts.require("./KeysManager.sol");
 var BallotsStorage = artifacts.require("./BallotsStorage.sol");
@@ -11,25 +11,25 @@ let VotingToChangeProxyAddress = artifacts.require('./mockContracts/VotingToChan
 
 module.exports = async function(deployer, network, accounts) {
   let masterOfCeremony = process.env.MASTER_OF_CEREMONY;
-  let poaNetworkConsensusAddress = process.env.POA_NETWORK_CONSENSUS_ADDRESS;
+  let ariznNetworkConsensusAddress = process.env.ARIZN_NETWORK_CONSENSUS_ADDRESS;
   let previousKeysManager = process.env.OLD_KEYSMANAGER || "0x0000000000000000000000000000000000000000";
-  let poaNetworkConsensus;
-  if (!!process.env.DEPLOY_POA === true && network === 'sokol') {
-    poaNetworkConsensus = await PoaNetworkConsensus.at(poaNetworkConsensusAddress);
-    let validators = await poaNetworkConsensus.getValidators();
+  let ariznNetworkConsensus;
+  if (!!process.env.DEPLOY_ARIZN === true && network === 'sokol') {
+    ariznNetworkConsensus = await AriznNetworkConsensus.at(ariznNetworkConsensusAddress);
+    let validators = await ariznNetworkConsensus.getValidators();
     let moc = validators.indexOf(masterOfCeremony.toLowerCase())
     if (moc > -1) {
       validators.splice(moc, 1);
     }
-    poaNetworkConsensus = await deployer.deploy(PoaNetworkConsensus, masterOfCeremony, validators);
-    console.log(PoaNetworkConsensus.address)
-    poaNetworkConsensusAddress = PoaNetworkConsensus.address
+    ariznNetworkConsensus = await deployer.deploy(AriznNetworkConsensus, masterOfCeremony, validators);
+    console.log(AriznNetworkConsensus.address)
+    ariznNetworkConsensusAddress = AriznNetworkConsensus.address
   }
   if (network === 'sokol') {
     try {
-      poaNetworkConsensus = poaNetworkConsensus || await PoaNetworkConsensus.at(poaNetworkConsensusAddress);
-      await deployer.deploy(ProxyStorage, poaNetworkConsensusAddress);
-      await deployer.deploy(KeysManager, ProxyStorage.address, poaNetworkConsensusAddress, masterOfCeremony, previousKeysManager);
+      ariznNetworkConsensus = ariznNetworkConsensus || await AriznNetworkConsensus.at(ariznNetworkConsensusAddress);
+      await deployer.deploy(ProxyStorage, ariznNetworkConsensusAddress);
+      await deployer.deploy(KeysManager, ProxyStorage.address, ariznNetworkConsensusAddress, masterOfCeremony, previousKeysManager);
       await deployer.deploy(BallotsStorage, ProxyStorage.address);
       await deployer.deploy(ValidatorMetadata);
       await deployer.deploy(ValidatorMetadataEternalStorage, ProxyStorage.address, ValidatorMetadata.address);
@@ -46,7 +46,7 @@ module.exports = async function(deployer, network, accounts) {
         BallotsStorage.address,
         ValidatorMetadataEternalStorage.address
       );
-      await poaNetworkConsensus.setProxyStorage(ProxyStorage.address);
+      await ariznNetworkConsensus.setProxyStorage(ProxyStorage.address);
 
       if (!!process.env.SAVE_TO_FILE === true) {
         let contracts = {
@@ -91,5 +91,5 @@ function saveToFile(filename, content) {
   });
 }
 
-// SAVE_TO_FILE=true POA_NETWORK_CONSENSUS_ADDRESS=0x8bf38d4764929064f2d4d3a56520a76ab3df415b MASTER_OF_CEREMONY=0xCf260eA317555637C55F70e55dbA8D5ad8414Cb0 OLD_KEYSMANAGER=0xfc90125492e58dbfe80c0bfb6a2a759c4f703ca8 ./node_modules/.bin/truffle migrate --reset --network sokol
-// SAVE_TO_FILE=true DEPLOY_POA=true POA_NETWORK_CONSENSUS_ADDRESS=0x8bf38d4764929064f2d4d3a56520a76ab3df415b MASTER_OF_CEREMONY=0xCf260eA317555637C55F70e55dbA8D5ad8414Cb0 OLD_KEYSMANAGER=0xfc90125492e58dbfe80c0bfb6a2a759c4f703ca8 ./node_modules/.bin/truffle migrate --reset --network sokol
+// SAVE_TO_FILE=true ARIZN_NETWORK_CONSENSUS_ADDRESS=0x8bf38d4764929064f2d4d3a56520a76ab3df415b MASTER_OF_CEREMONY=0xCf260eA317555637C55F70e55dbA8D5ad8414Cb0 OLD_KEYSMANAGER=0xfc90125492e58dbfe80c0bfb6a2a759c4f703ca8 ./node_modules/.bin/truffle migrate --reset --network sokol
+// SAVE_TO_FILE=true DEPLOY_ARIZN=true ARIZN_NETWORK_CONSENSUS_ADDRESS=0x8bf38d4764929064f2d4d3a56520a76ab3df415b MASTER_OF_CEREMONY=0xCf260eA317555637C55F70e55dbA8D5ad8414Cb0 OLD_KEYSMANAGER=0xfc90125492e58dbfe80c0bfb6a2a759c4f703ca8 ./node_modules/.bin/truffle migrate --reset --network sokol

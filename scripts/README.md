@@ -1,4 +1,4 @@
-# How to use test-poa-setup.js
+# How to use test-arizn-setup.js
 
 1. setup parity and write 4 toml config files.
 
@@ -56,13 +56,13 @@ You have to have bytecode of contract where the same master of ceremony address 
 
 3. Deploy all contract using [../migrations/2_deploy_contract.js]([../migrations/2_deploy_contract.js]) file:
 ```bash
-POA_NETWORK_CONSENSUS_ADDRESS=0xf472e0e43570b9afaab67089615080cf7c20018d MASTER_OF_CEREMONY=0x0039F22efB07A647557C7C5d17854CFD6D489eF3 ./node_modules/.bin/truffle migrate --reset --network sokol
+arizn_NETWORK_CONSENSUS_ADDRESS=0xf472e0e43570b9afaab67089615080cf7c20018d MASTER_OF_CEREMONY=0x0039F22efB07A647557C7C5d17854CFD6D489eF3 ./node_modules/.bin/truffle migrate --reset --network sokol
 ```
 
 4. Open [addresses.js](addresses.js) and modify masterOfCeremony and keysManager addresses.
 
 5. Run 
-`PORT=8545 UNLOCKED_ADDRESS=0x0039F22efB07A647557C7C5d17854CFD6D489eF3 node test-poa-setup.js` from `scripts` folder
+`PORT=8545 UNLOCKED_ADDRESS=0x0039F22efB07A647557C7C5d17854CFD6D489eF3 node test-arizn-setup.js` from `scripts` folder
 If all went succesfully, you should see status for `Initial Key` and `CreateKeys` as `0x1` if the status is `0x0` that means something went wrong
 OR
 you are trying to initialize already initialized key
@@ -124,7 +124,7 @@ parity --config secondMiner.toml --nat=none ui
 ```
 8. Go to Contract > +Watch > Enter Address and ABI for KeysManager contract
 9. Verify that everything is correct
-10. Now you are all done. You should see that 2 miners organized PoA consensus and both should mine the blockchain.
+10. Now you are all done. You should see that 2 miners organized arizn consensus and both should mine the blockchain.
 Feel free to add as many nodes as you want using this setup.
 
 # Cleanup
@@ -133,7 +133,7 @@ If you want to start everything from scratch, just go to each miner's folder and
 ```bash
 cd test_feofan
 rm -rf cache chains dapps network signer
-rm -rf keys/OraclesPoA/address_book.json
+rm -rf keys/Oraclesarizn/address_book.json
 ```
 
 # How to generate bytecode for spec.json consensus contract
